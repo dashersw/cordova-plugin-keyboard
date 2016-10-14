@@ -66,6 +66,7 @@
                                             object:nil
                                              queue:[NSOperationQueue mainQueue]
                                         usingBlock:^(NSNotification* notification) {
+            self.webView.scrollView.delegate = self->oldScrollDelegate;
             [weakSelf.commandDelegate evalJs:@"Keyboard.fireOnShow();"];
                                         }];
     _keyboardHideObserver = [nc addObserverForName:UIKeyboardDidHideNotification
@@ -79,6 +80,10 @@
                                                 object:nil
                                                  queue:[NSOperationQueue mainQueue]
                                             usingBlock:^(NSNotification* notification) {
+            self->oldScrollDelegate = self.webView.scrollView.delegate;
+            self->oldOffset = self.webView.scrollView.contentOffset;
+            self.webView.scrollView.delegate = self;
+            [self.webView.scrollView setShowsVerticalScrollIndicator:NO];
             [weakSelf.commandDelegate evalJs:@"Keyboard.fireOnShowing();"];
             weakSelf.keyboardIsVisible = YES;
                                             }];
@@ -208,6 +213,8 @@ static IMP WKOriginalImp;
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView
 {
+    scrollView.contentOffset = oldOffset;
+
     if (_shrinkView && _keyboardIsVisible) {
         CGFloat maxY = scrollView.contentSize.height - scrollView.bounds.size.height;
         if (scrollView.bounds.origin.y > maxY) {

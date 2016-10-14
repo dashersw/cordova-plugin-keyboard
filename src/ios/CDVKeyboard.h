@@ -24,6 +24,10 @@
     id _keyboardShowObserver, _keyboardHideObserver, _keyboardWillShowObserver, _keyboardWillHideObserver;
     @protected
     id _shrinkViewKeyboardWillChangeFrameObserver;
+    @protected
+    CGPoint oldOffset;
+    @protected
+    id oldScrollDelegate;
 }
 
 @property (readwrite, assign, nonatomic) BOOL shrinkView;
